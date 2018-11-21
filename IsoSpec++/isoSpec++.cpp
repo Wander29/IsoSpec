@@ -65,6 +65,43 @@ marginals(nullptr),
 modeLProb(0.0)
 {
     try{
+	std::vector<double> IM;
+	std::vector<double> IP;
+
+	for(int ii=0; ii<dimNumber; ii++)
+	    for(int jj=0; jj<isotopeNumbers[ii]; jj++)
+	    {
+		IM.push_back(_isotopeMasses[ii][jj]);
+		IP.push_back(_isotopeProbabilities[ii][jj]);
+	    }
+
+        setupMarginals(IM.data(), IP.data());
+    }
+    catch(...)
+    {
+        delete[] isotopeNumbers;
+        delete[] atomCounts;
+        throw;
+    }
+}
+
+Iso::Iso(
+    int           _dimNumber,
+    const int*    _isotopeNumbers,
+    const int*    _atomCounts,
+    const double* _isotopeMasses,
+    const double* _isotopeProbabilities
+) :
+disowned(false),
+dimNumber(_dimNumber),
+isotopeNumbers(array_copy<int>(_isotopeNumbers, _dimNumber)),
+atomCounts(array_copy<int>(_atomCounts, _dimNumber)),
+confSize(_dimNumber * sizeof(int)),
+allDim(0),
+marginals(nullptr),
+modeLProb(0.0)
+{
+    try{
         setupMarginals(_isotopeMasses, _isotopeProbabilities);
     }
     catch(...)
@@ -74,6 +111,7 @@ modeLProb(0.0)
         throw;
     }
 }
+
 
 Iso::Iso(Iso&& other) :
 disowned(other.disowned),
@@ -101,11 +139,12 @@ modeLProb(other.modeLProb)
 {}
 
 
-inline void Iso::setupMarginals(const double* const * _isotopeMasses, const double* const * _isotopeProbabilities)
+inline void Iso::setupMarginals(const double* _isotopeMasses, const double* _isotopeProbabilities)
 {
     if (marginals == nullptr)
     {
         int ii = 0;
+	int idx = 0;
         try
         {
             marginals = new Marginal*[dimNumber];
@@ -113,12 +152,13 @@ inline void Iso::setupMarginals(const double* const * _isotopeMasses, const doub
             {
                 allDim += isotopeNumbers[ii];
                 marginals[ii] = new Marginal(
-                        _isotopeMasses[ii],
-                        _isotopeProbabilities[ii],
+                        &_isotopeMasses[idx],
+                        &_isotopeProbabilities[idx],
                         isotopeNumbers[ii],
                         atomCounts[ii]
                     );
                 modeLProb += marginals[ii]->getModeLProb();
+		idx += isotopeNumbers[ii];
                 ii++;
             }
         }
@@ -181,8 +221,8 @@ allDim(0),
 marginals(nullptr),
 modeLProb(0.0)
 {
-    std::vector<const double*> isotope_masses;
-    std::vector<const double*> isotope_probabilities;
+    std::vector<double> isotope_masses;
+    std::vector<double> isotope_probabilities;
 
     dimNumber = parse_formula(formula, isotope_masses, isotope_probabilities, &isotopeNumbers, &atomCounts, &confSize);
 
