@@ -495,7 +495,22 @@ private:
 };
 
 
-
+class IsoSampler
+{
+    IsoLayeredGenerator iso_iter;
+    double accumulated_prob;
+    double chasing_prob;
+    size_t no_molecules;
+    double accuracy;
+    double beta_bias;
+    size_t accumulated;
+    size_t current_count;
+public:
+    IsoSampler(Iso&& i, size_t ionic_current, double precision = 0.999, double beta_bias = 1.0);
+    inline double mass() const { return iso_iter.mass(); };
+    inline size_t amount() const { return current_count; };
+    bool next();
+};
 
 
 #if !ISOSPEC_BUILDING_R

@@ -79,7 +79,15 @@ class Sampler:
         self.current_count = nan
     def advance(self):
         if self.ionic_current == 0:
-            return False
+            if self.accumulated == 0:
+                return False
+            else:
+                self.accumulated = 0
+                while self.chasing_prob >= self.accumulated_prob:
+                    self.mass, self.cconf_prob = next(self.iso)
+                    self.accumulated_prob += self.cconf_prob
+                return True
+                
         while self.chasing_prob >= self.accumulated_prob:
             self.mass, self.cconf_prob = next(self.iso)
             self.accumulated_prob += self.cconf_prob
@@ -97,7 +105,9 @@ class Sampler:
                     self.ionic_current -= 1
                     self.current_count += 1
                     rem_interval = self.accuracy - self.chasing_prob
-                return self.current_count > 0
+                if current_count == 0:
+                    return self.advance()
+                return True #self.current_count > 0
             else:
                 self.current_count = _safe_binom(self.ionic_current, prob_diff / rem_interval) + self.accumulated
                 self.accumulated = 0

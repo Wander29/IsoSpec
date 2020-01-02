@@ -802,8 +802,78 @@ bool IsoOrderedGenerator::advanceToNextConfiguration()
  * ---------------------------------------------------------------------------------------------------
  */
 
+IsoSampler::IsoSampler(Iso&& i, size_t _no_molecules, double _precision, double _beta_bias) :
+iso_iter(std::move(i), 0.99),
+accumulated_prob(0.0),
+chasing_prob(0.0),
+no_molecules(_no_molecules),
+accuracy(_precision),
+beta_bias(_beta_bias),
+accumulated(0)
+{}
 
 
+bool IsoSampler::next()
+{
+    if(no_molecules == 0)
+    {
+        if(accumulated > 0)
+            while(chasing_prob >= accumulated_prob)
+            {
+                iso_iter.advanceToNextConfiguration();
+                accumulated_prob += iso_iter.prob();
+            }
+        else
+            return false;
+    }
+
+    while(chasing_prob >= accumulated_prob)
+    {
+        iso_iter.advanceToNextConfiguration();
+        accumulated_prob += iso_iter.prob();
+    }
+    
+    double prob_diff = accumulated_prob - chasing_prob;
+    double expected_mols = prob_diff * no_molecules;
+    double rem_interval = accuracy - chasing_prob;
+
+    while(true)
+    {
+        if(expected_mols / rem_interval < beta_bias)
+        {
+            current_count = accumulated;
+            no_molecules -= accumulated;
+            accumulated = 1;
+            while(no_molecules > 0 && chasing_prob < accumulated_prob)
+            {
+                chasing_prob += _beta_1_b(no_molecules) * rem_interval
+                no_molecules -= 1;
+                current_count += 1;
+                rem_interval = accuracy - chasing_prob;
+            }
+            if(current_count == 0)
+                return next();
+            return true;
+        }
+        else
+        {
+            current_count = _safe_binom(no_molecules, prob_diff / rem_interval) + accumulated;
+            accumulated = 0;
+            chasing_prob = accumulated_prob;
+            if(current_count > 0)
+            {
+                no_molecules -= current_count;
+                return true;
+            }
+            iso_iter.advanceToNextConfiguration();
+            prob_diff = iso_iter.prob();
+            accumulated_prob += prob_diff;
+            expected_mols = prob_diff * no_molecules;
+            rem_interval = accuracy - chasing_prob;
+        }
+    }
+
+}
 
 #if !ISOSPEC_BUILDING_R
 
