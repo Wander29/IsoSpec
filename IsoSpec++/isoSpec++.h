@@ -52,7 +52,7 @@ unsigned int parse_formula(const char* formula,
     It contains full description of the molecule for which one would like to calculate the isotopic distribution.
 */
 class ISOSPEC_EXPORT_SYMBOL Iso {
-private:
+public:
 
     //! Set up the marginal isotopic envelopes, corresponding to subisotopologues.
     /*!
@@ -64,7 +64,6 @@ private:
     void setupMarginals(const double* const * _isotopeMasses,
                         const double* const * _isotopeProbabilities);
     bool            disowned;       /*!< A variable showing if the Iso class was specialized by its child-class. If so, then the description of the molecules has been transfered there and Iso is a carcass class, dead as a dodo, an ex-class if you will. */
-protected:
     int             dimNumber;      /*!< The number of elements in the chemical formula of the molecule. */
     int*            isotopeNumbers; /*!< A table with numbers of isotopes for each element. */
     int*            atomCounts;     /*!< A table with numbers of isotopes for each element. */
@@ -73,7 +72,6 @@ protected:
     Marginal**      marginals;      /*!< The table of pointers to the distributions of individual subisotopologues. */
     double          modeLProb;      /*!< The log-probability of the mode of the isotopic distribution. */
 
-public:
 
     Iso();
 
@@ -163,12 +161,11 @@ public:
 */
 class ISOSPEC_EXPORT_SYMBOL IsoGenerator : public Iso
 {
-protected:
+public:
     double* partialLProbs;  /*!< The prefix sum of the log-probabilities of the current isotopologue. */
     double* partialMasses;  /*!< The prefix sum of the masses of the current isotopologue. */
     double* partialProbs;/*!< The prefix product of the probabilities of the current isotopologue. */
 
-public:
     //! Advance to the next, not yet visited, most probable isotopologue.
     /*!
         \return Return false if it is not possible to advance.
@@ -216,7 +213,7 @@ public:
 */
 class ISOSPEC_EXPORT_SYMBOL IsoOrderedGenerator: public IsoGenerator
 {
-private:
+public:
     MarginalTrek**              marginalResults;            /*!< Table of pointers to marginal distributions of subisotopologues. */
     std::priority_queue<void*,std::vector<void*>,ConfOrder> pq; /*!< The priority queue used to generate isotopologues ordered by descending probability. */
     void*                       topConf;                    /*!< Most probable configuration. */
@@ -229,7 +226,6 @@ private:
     double                      currentProb;                /*!< The probability of the current isotopologue. */
     int                         ccount;
 
-public:
     bool advanceToNextConfiguration() override final;
 
     //! Save the counts of isotopes in the space.
@@ -272,8 +268,7 @@ public:
 */
 class ISOSPEC_EXPORT_SYMBOL IsoThresholdGenerator: public IsoGenerator
 {
-private:
-
+public:
     int*                    counter;            /*!< An array storing the position of an isotopologue in terms of the subisotopologues ordered by decreasing probability. */
     double*                 maxConfsLPSum;
     const double            Lcutoff;            /*!< The logarithm of the lower bound on the calculated probabilities. */
@@ -287,7 +282,6 @@ private:
     double partialLProbs_second_val, lcfmsv;
     bool empty;
 
-public:
     inline void get_conf_signature(int* space) const override final
     {
         counter[0] = lProbs_ptr - lProbs_ptr_start;
@@ -380,7 +374,6 @@ public:
      * and has undefined results (incl. segfaults) otherwise. */
     size_t count_confs();
 
-private:
     //! Recalculate the current partial log-probabilities, masses, and probabilities.
     ISOSPEC_FORCE_INLINE void recalc(int idx)
     {
@@ -402,8 +395,7 @@ private:
 
 class ISOSPEC_EXPORT_SYMBOL IsoLayeredGenerator : public IsoGenerator
 {
-private:
-
+public:
     int*                    counter;            /*!< An array storing the position of an isotopologue in terms of the subisotopologues ordered by decreasing probability. */
     double*                 maxConfsLPSum;
     double currentLThreshold, lastLThreshold;
@@ -417,7 +409,6 @@ private:
     double* partialLProbs_second;
     double partialLProbs_second_val, lcfmsv, last_lcfmsv;
 
-public:
     inline void get_conf_signature(int* space) const override final
     {
         counter[0] = lProbs_ptr - lProbs_ptr_start;
@@ -490,7 +481,6 @@ public:
 
     virtual bool nextLayer(double offset) override final;
 
-private:
     bool carry();
 };
 
@@ -498,6 +488,7 @@ private:
 
 class IsoStochasticGenerator : Iso
 {
+public:
     IsoLayeredGenerator ILG;
     size_t to_sample_left;
     const double precision;
@@ -506,7 +497,6 @@ class IsoStochasticGenerator : Iso
     double chasing_prob;
     size_t current_count;
 
-public:
     IsoStochasticGenerator(Iso&& iso, size_t no_molecules, double precision = 0.9999, double beta_bias = 5.0);
 
     ISOSPEC_FORCE_INLINE size_t count() const { return current_count; };
