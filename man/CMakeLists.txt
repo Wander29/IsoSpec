@@ -5,10 +5,10 @@ message("")
 
 # Prepare the logo picture files with the right version (configure_file)
 
-configure_file(${CMAKE_SOURCE_DIR}/CMakeStuff/isospec_logo2_high.svg.in
+configure_file(./CMakeStuff/isospec_logo2_high.svg.in
 	${CMAKE_CURRENT_SOURCE_DIR}/images/isospec_logo2_high_versioned.svg @ONLY)
 
-configure_file(${CMAKE_SOURCE_DIR}/CMakeStuff/isospec_logo2_long.svg.in
+configure_file(./CMakeStuff/isospec_logo2_long.svg.in
 	${CMAKE_CURRENT_SOURCE_DIR}/images/isospec_logo2_long_versioned.svg @ONLY)
 
 # Make the conversion of the svg file into a png, but only on GNU/Linux
@@ -30,7 +30,7 @@ endif()
 # Ensure that the doxyfile configuration file for Doxygen has always
 # the proper version number!
 
-configure_file(${CMAKE_SOURCE_DIR}/CMakeStuff/doxyfile.in
+configure_file(./CMakeStuff/doxyfile.in
 	${CMAKE_CURRENT_SOURCE_DIR}/doxyfile @ONLY)
 
 add_custom_target(html_doc

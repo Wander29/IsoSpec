@@ -2,13 +2,27 @@
 # Author: Filippo Rusconi
 # Created: June 2020
 
-message(\n${BoldRed}"Now configuring IsoSpec++/ for ${CMAKE_PROJECT_NAME}"${ColourReset}\n)
+# modified by Ludovico Venturi, @MolHorizon, 2022/06/13
 
+#message(\n${BoldRed}"Now configuring IsoSpec++/ for ${CMAKE_PROJECT_NAME}"${ColourReset}\n)
+
+cmake_minimum_required(VERSION 3.12...3.23)
+
+project(IsoSpec
+    DESCRIPTION "A program to calculate isotopic clusters"
+    HOMEPAGE_URL "https://github.com/MatteoLacki/IsoSpec")
+
+set(ISOSPEC_VERSION_MAJOR "2")
+set(ISOSPEC_VERSION_MINOR "1")
+set(ISOSPEC_VERSION_PATCH "3")
+set(ISOSPEC_LIB_NAME "libIsoSpec++")
+set(ISOSPEC_VERSION "${ISOSPEC_VERSION_MAJOR}.${ISOSPEC_VERSION_MINOR}.${ISOSPEC_VERSION_PATCH}")
+set(VERSION 2.1.3)
+set(ISOSPEC_LIB_VERSION ${ISOSPEC_VERSION})
 
 set(isospec_SRCS
 	unity-build.cpp
-	)
-
+)
 
 # Not sure I understand this. Is this the way to test for MSVS in CMake land ?
 if(WIN32 OR _WIN32)
@@ -20,6 +34,23 @@ if(WIN32 OR _WIN32)
 
 endif()
 
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+######### The static library #########
+
+add_library(IsoSpec++-static STATIC ${isospec_SRCS})
+add_library(isospec ALIAS IsoSpec++-static)
+
+set_target_properties(IsoSpec++-static
+  PROPERTIES OUTPUT_NAME IsoSpec++
+  CLEAN_DIRECT_OUTPUT 1
+)
+
+target_include_directories(
+  IsoSpec++-static
+  PUBLIC
+    .
+)
 
 #message(STATUS "ISOSPEC_LIB_VERSION: ${ISOSPEC_LIB_VERSION}")
 #message(STATUS "ISOSPEC_LIB_SOVERSION: ${ISOSPEC_LIB_SOVERSION}")
@@ -27,34 +58,23 @@ endif()
 
 ######### The shared library #########
 
-add_library(IsoSpec++-shared SHARED ${isospec_SRCS})
+#add_library(IsoSpec++-shared SHARED ${isospec_SRCS})
 
-set_target_properties(IsoSpec++-shared
-	PROPERTIES OUTPUT_NAME IsoSpec++
-	CLEAN_DIRECT_OUTPUT 1
-	VERSION ${ISOSPEC_LIB_VERSION}
-	SOVERSION ${ISOSPEC_LIB_SOVERSION}
-	)
-
-
-######### The static library #########
-
-add_library(IsoSpec++-static STATIC ${isospec_SRCS})
-
-set_target_properties(IsoSpec++-static
-	PROPERTIES OUTPUT_NAME IsoSpec++
-	CLEAN_DIRECT_OUTPUT 1
-	)
-
+#set_target_properties(IsoSpec++-shared
+#	PROPERTIES OUTPUT_NAME IsoSpec++
+#	CLEAN_DIRECT_OUTPUT 1
+#	VERSION ${ISOSPEC_LIB_VERSION}
+#	SOVERSION ${ISOSPEC_LIB_SOVERSION}
+#	)
 
 # Install both shared and static libs
-
-install(TARGETS IsoSpec++-shared IsoSpec++-static
-	LIBRARY NAMELINK_SKIP 
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}
-	# This one is for WIN32
-	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-	)
+#
+#install(TARGETS IsoSpec++-shared IsoSpec++-static
+#	LIBRARY NAMELINK_SKIP
+#	DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#	# This one is for WIN32
+#	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+#	)
 
 
 # Do not know how this would still be useful.
