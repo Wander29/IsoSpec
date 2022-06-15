@@ -50,7 +50,7 @@ include(GNUInstallDirs)
 # Add folder where are supportive functions
 # that contain toolchains: for UNIX/WIN/MAC
 # that contain modules useful on any system.
-set(CMAKE_UTILS_PATH ${CMAKE_SOURCE_DIR}/CMakeStuff)
+set(CMAKE_UTILS_PATH ./CMakeStuff)
 set(CMAKE_TOOLCHAINS_PATH ${CMAKE_UTILS_PATH}/toolchains)
 set(CMAKE_MODULE_PATH ${CMAKE_UTILS_PATH}/modules)
 #message("CMAKE_MODULE_PATH:" ${CMAKE_MODULE_PATH})
