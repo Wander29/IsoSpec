@@ -56,7 +56,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_UTILS_PATH}/modules)
 #message("CMAKE_MODULE_PATH:" ${CMAKE_MODULE_PATH})
 
 # This says that when compiling, .h files must also be
-# searche in the current directory where cpp files are 
+# searched in the current directory where cpp files are
 # compiled.
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
