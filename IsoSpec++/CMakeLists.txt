@@ -33,7 +33,7 @@ set_target_properties(IsoSpec++-static
 target_include_directories(
   IsoSpec++-static
   PUBLIC
-    .
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 #message(STATUS "ISOSPEC_LIB_VERSION: ${ISOSPEC_LIB_VERSION}")
