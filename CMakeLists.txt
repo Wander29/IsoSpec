@@ -92,21 +92,24 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 message(STATUS "${BoldGreen}CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}${ColourReset}")
 
 #############################################################
-# We do not want warnings for unknown pragmas:
-message(STATUS "${BoldGreen}Setting definition -Wno-unknown-pragmas.${ColourReset}")
-add_definitions(-Wno-unknown-pragmas)
+# Set default compile flags for GCC
+if(CMAKE_COMPILER_IS_GNUCXX)
+  # We do not want warnings for unknown pragmas:
+  message(STATUS "${BoldGreen}Setting definition -Wno-unknown-pragmas.${ColourReset}")
+  add_definitions(-Wno-unknown-pragmas)
 
-# Enable warnings and possibly treat them as errors
-message(STATUS "${BoldGreen}Setting definition -Wall.${ColourReset}")
-add_definitions(-Wall)
-message(STATUS "${BoldGreen}Setting definition -Wextra.${ColourReset}")
-add_definitions(-Wextra)
-message(STATUS "${BoldGreen}Setting definition -pedantic.${ColourReset}")
-add_definitions(-pedantic)
+  # Enable warnings and possibly treat them as errors
+  message(STATUS "${BoldGreen}Setting definition -Wall.${ColourReset}")
+  add_definitions(-Wall)
+  message(STATUS "${BoldGreen}Setting definition -Wextra.${ColourReset}")
+  add_definitions(-Wextra)
+  message(STATUS "${BoldGreen}Setting definition -pedantic.${ColourReset}")
+  add_definitions(-pedantic)
 
-if(WARN_AS_ERROR)
-    message(STATUS "${BoldYellow}Setting definition -Werror.${ColourReset}")
-    add_definitions(-Werror)
+  if(WARN_AS_ERROR)
+      message(STATUS "${BoldYellow}Setting definition -Werror.${ColourReset}")
+      add_definitions(-Werror)
+  endif()
 endif()
 
 message(STATUS "${BoldGreen}CMAKE_SOURCE_DIR: ${CMAKE_SOURCE_DIR}${ColourReset}")
