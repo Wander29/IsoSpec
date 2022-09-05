@@ -38,9 +38,9 @@ set(ISOSPEC_LIB_SOVERSION ${ISOSPEC_VERSION_MAJOR})
 # It needs to be set before include(GNUInstallDirs)
 # below, because it roots all the other dirs' configs.
 
-if(NOT CMAKE_INSTALL_PREFIX)
-    set(CMAKE_INSTALL_PREFIX /usr)
-endif()
+#if(NOT CMAKE_INSTALL_PREFIX)
+#    set(CMAKE_INSTALL_PREFIX /usr)
+#endif()
 
 # This module sets a number of installation directories 
 # according to the GNU coding standards. It takes the
