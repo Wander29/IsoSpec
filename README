@@ -1,3 +1,9 @@
+This is a fork of the repository https://github.com/MatteoLacki/IsoSpec.
+
+You can sync it with its source and use **cmake-update-ludo** as working branch, where we can merge the updates through pull requests.
+
+---
+
 IsoSpec, the isotopic fine structure calculator
 ===============================================
 
